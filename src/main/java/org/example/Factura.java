@@ -2,6 +2,7 @@ package org.example;
 
 
 import java.util.Arrays;
+import java.util.List;
 
 public class Factura {
     private String fecha;
@@ -15,6 +16,16 @@ public class Factura {
     private String [][] itemsFactura;
     private int indiceActual = 1;
     private double subTotal = 0.0;
+    private Cliente cliente;
+    private List<DetalleFactura> detallesFactura;
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
 
     public String getFecha() {
         return fecha;
@@ -98,17 +109,41 @@ public class Factura {
         this.itemsFactura[0][3] = "Cantidad";
         this.itemsFactura[0][4] = "Subtotal";
 
-        for (int i = 0; i < itemsFactura.length; i++) {
-            for (int j = 0; j < itemsFactura[i].length; j++) {
-                if (itemsFactura[i][j] == null) {
-                    itemsFactura[i][j] = "-";
+        int columnas = itemsFactura[0].length;
+        int[] anchoColumnas = new int[columnas];
+
+        // Calcular ancho de cada columna
+        for (int j = 0; j < columnas; j++) {
+            int max = 0;
+            for (int i = 0; i < itemsFactura.length; i++) {
+                if (itemsFactura[i][j] != null && itemsFactura[i][j].length() > max) {
+                    max = itemsFactura[i][j].length();
                 }
-                System.out.printf("%-20s", itemsFactura[i][j]);
+            }
+            anchoColumnas[j] = max + 2; // +2 para espacio extra
+        }
+
+        // Imprimir fila de separación
+        StringBuilder separador = new StringBuilder();
+        for (int w : anchoColumnas) {
+            separador.append("+");
+            for (int k = 0; k < w; k++) separador.append("-");
+        }
+        separador.append("+");
+
+        // Imprimir la matriz
+        System.out.println(separador);
+        for (int i = 0; i < itemsFactura.length; i++) {
+            System.out.print("|");
+            for (int j = 0; j < itemsFactura[i].length; j++) {
+                String valor = (itemsFactura[i][j] == null) ? "-" : itemsFactura[i][j];
+                System.out.printf(" %-" + (anchoColumnas[j] - 1) + "s|", valor);
             }
             System.out.println();
-
+            System.out.println(separador);
         }
     }
+
     public void setArticuloMatriz(String[] articulo, String cantidad) {
         articulo[3] = cantidad;
         double cantidadCast = Double.parseDouble(cantidad);
@@ -136,16 +171,26 @@ public class Factura {
         return subTotal + recargo;
     }
 
-    public void getFactura (Cliente cliente){
+    public void getFactura(Cliente cliente) {
+        int anchoColumna1 = 13;
+        int anchoColumna2 = 55;
 
-        System.out.println("Cliente: " +  cliente.getRazonSocial());
-        System.out.println("Fecha: " + this.getFecha());
-        System.out.println("Numero: " + this.getNroFactura());
-        System.out.println("Tipo pago: "+ this.getTipoPago());
+        String separador = "+" + "-".repeat(anchoColumna1) + "+" + "-".repeat(anchoColumna2) + "+";
+        System.out.println(separador);
 
+        System.out.printf("| %-" + (anchoColumna1 - 1) + "s| %-" + (anchoColumna2 - 1) + "s|\n", "Cliente", cliente.getRazonSocial());
+        System.out.println(separador);
 
+        System.out.printf("| %-" + (anchoColumna1 - 1) + "s| %-" + (anchoColumna2 - 1) + "s|\n", "Fecha", this.getFecha());
+        System.out.println(separador);
 
+        System.out.printf("| %-" + (anchoColumna1 - 1) + "s| %-" + (anchoColumna2 - 1) + "s|\n", "Número", this.getNroFactura());
+        System.out.println(separador);
+
+        System.out.printf("| %-" + (anchoColumna1 - 1) + "s| %-" + (anchoColumna2 - 1) + "s|\n", "Tipo pago", this.getTipoPago());
+        System.out.println(separador);
     }
+
 
     @Override
     public String toString() {

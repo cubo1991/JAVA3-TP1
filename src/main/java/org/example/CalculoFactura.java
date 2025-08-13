@@ -23,52 +23,115 @@ public class CalculoFactura {
                 {"111", "Naranjas", "80", "Kg"}
         };
 
+        //Instanciamos la clase Scanner
         Scanner sc = new Scanner(System.in);
 
         while (true) {
+
+            //Instanciamos las clases facturas y cliente
             Factura factura = new Factura();
             Cliente cliente = new Cliente();
 
+
+            // Comenzamos a pedir los datos de la factura
             System.out.println("Ingrese los datos de la factura");
             System.out.println("Numero factura");
-            factura.setNroFactura(Long.parseLong(sc.nextLine()));
+            String numeroFactura = sc.nextLine();
+
+            //Validamos que el dato ingresado sea un numero
+
+            if( Validaciones.validarLong(numeroFactura)){
+                factura.setNroFactura(Long.parseLong(numeroFactura));
+            } else {
+                System.out.println("Ingrese un valor valido");
+                continue;
+            }
+
             System.out.println("Ingrese fecha de factura");
-            factura.setFecha(sc.nextLine());
+
+            //Validamos que el dato ingresado no contenga letras
+            while(true){
+                String fechaFactura = sc.nextLine();
+                if( Validaciones.validarFecha(fechaFactura)){
+                    factura.setFecha(fechaFactura);
+                    break;
+                } else {
+                    System.out.println("Ingrese un valor valido");
+                   continue;
+                }
+            }
             System.out.println("Ingrese Datos del cliente");
             System.out.println("Razon Social");
             cliente.setRazonSocial(sc.nextLine());
             factura.setRazonSocial(cliente.getRazonSocial());
             System.out.println("Cuit");
-            factura.setCuitCliente(cliente.getCuit());
-            cliente.setCuit(Long.parseLong(sc.nextLine()));
+
+            //Validamos que el dato ingresado sea un numero
+            while(true){
+                String cuitCliente = sc.nextLine();
+                if( Validaciones.validarLong(cuitCliente)){
+                    long cuit = Long.parseLong(cuitCliente);
+                    cliente.setCuit(cuit);
+                    factura.setCuitCliente(cuit);
+                    break;
+                } else {
+                    System.out.println("Ingrese un valor valido");
+                    continue;
+                }
+            }
+
+
 
             while (true) {
-                System.out.println("Ingrese el tipo de  pago");
-                System.out.println("1 - Contado");
-                System.out.println("2 - Tarjeta de Credito");
-                System.out.println("3 - Tarjeta de Débito");
-                String opcion = sc.nextLine();
-                switch (opcion) {
-                    case "1":
-                        factura.setTipoPago("C");
-                        break;
-                    case "2":
-                        factura.setTipoPago("TC");
-                        break;
-                    case "3":
-                        factura.setTipoPago("TD");
-                        break;
-                    default:
-                        System.out.println("Opcion invalida, ingrese un valor válido");
+
+                try {
+                    System.out.println("Ingrese el tipo de  pago");
+                    System.out.println("1 - Contado");
+                    System.out.println("2 - Tarjeta de Credito");
+                    System.out.println("3 - Tarjeta de Débito");
+                    String opcion = sc.nextLine();
+                    switch (opcion) {
+                        case "1":
+                            factura.setTipoPago("C");
+                            break;
+                        case "2":
+                            factura.setTipoPago("TC");
+                            break;
+                        case "3":
+                            factura.setTipoPago("TD");
+                            break;
+                        default:
+                            //Si se pide un valor numerico que no este contemplado en las opciones, pide uno nuevo
+                            System.out.println("Opcion invalida, ingrese un valor válido");
+                            continue;
+                    }
+                    break;
+                } catch (Exception e) {
+                    //En caso de que no sea un número, pide ingresar un valor númerico
+                    System.out.println("Ingrese un caracter numerico valido");
 
                 }
-                break;
             }
             System.out.println("Ingrese la cantidad de articulos a facturar");
-            int cantidad;
+            int cantidad = 0;
+
+            while(true){
+                String cantStr =  sc.nextLine();
+                //Validamos que el dato ingresado sea un numero
+               if(Validaciones.validarNumero(cantStr)){
+                   cantidad = Integer.parseInt(cantStr);
+                   break;
+               } else {
+                   System.out.println("Por favor, ingrese un valor válido");
+               }
+            }
+
             while (true) {
-                cantidad = Integer.parseInt(sc.nextLine());
+
                 if (cantidad > 0) {
+
+                    //Se instancia la matriz
+
                     String[][] matriz = new String[cantidad + 1][5];
                     factura.setItemsFactura(matriz);
                     break;
@@ -96,6 +159,11 @@ public class CalculoFactura {
                             if(art[3].equals("U")) {
                                 System.out.println("Ingrese un numero entero");
                                 String numero = sc.nextLine();
+                                //Validamos que el dato ingresado sea un numero
+                                if (!Validaciones.validarNumero(numero)) {
+                                    System.out.println("Ingrese un numero");
+                                    continue;
+                                }
                                 while(true) {
                                     if(numero.contains(".")) {
                                         System.out.println("Por favor ingrese un entero");
@@ -106,21 +174,20 @@ public class CalculoFactura {
                                     break;
                                 }
                             }
-                            if(art[3].equals("Kg")) {
+                        if(art[3].equals("Kg")) {
+                            while(true){
                                 System.out.println("Ingrese un numero decimal");
                                 String numero = sc.nextLine();
-                                while(true){
-                                    if(numero.contains(".")) {
-                                        cantidadArt = numero;
-                                        break;
-                                    } else {
-                                        System.out.println("Por favor ingrese un decimal");
-                                        break;
-
-                                    }
-                                }
+                                //Validamos que el dato ingresado sea un decimal
+                                if(!Validaciones.validarDecimal(numero)) {
+                                    System.out.println("Ingrese un número válido");
+                                    continue;
                                 }
 
+                                cantidadArt = numero;
+                                break;
+                            }
+                        }
 
 
                         factura.setArticuloMatriz(art, cantidadArt);

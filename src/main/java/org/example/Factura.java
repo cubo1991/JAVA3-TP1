@@ -1,6 +1,7 @@
 package org.example;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,6 +19,82 @@ public class Factura {
     private double subTotal = 0.0;
     private Cliente cliente;
     private List<DetalleFactura> detallesFactura;
+
+    //Colaboracion entre Detallefactura y factura
+    public void mostrarDetallesFactura (){
+        for (DetalleFactura detalles : detallesFactura ) {
+            System.out.println("Cantidad: " +  detalles.getCantidad());
+            System.out.println("Subtotal " +  detalles.getSubtotal());
+            System.out.println("Articulo " + detalles.getArticulo());
+            System.out.println("Factura " + detalles.getFactura());
+        }
+    }
+    public void addDetalle (DetalleFactura detalle){
+    if(detallesFactura == null){
+        detallesFactura = new ArrayList<>();
+    }
+        detallesFactura.add(detalle);
+    }
+
+    public void removeDetalle (DetalleFactura detalle){
+
+            detallesFactura.remove(detalle);
+
+    }
+
+    public void getArticulos(){
+        for (DetalleFactura detalle : detallesFactura){
+            System.out.println(detalle.getArticulo());
+        }
+    }
+
+    public void buscarArticulo(Articulo articulo){
+        for (DetalleFactura detalle : detallesFactura){
+            if(detalle.getArticulo().getCodigo() == articulo.getCodigo()){
+                System.out.println("Articulo encontrado");
+            }
+        }
+    }
+
+    public double calcularSubTotales () {
+      double subTotalDetalles = 0.0;
+
+        for (DetalleFactura detalleFactura : detallesFactura){
+            subTotal += detalleFactura.getSubtotal();
+        }
+
+        return subTotalDetalles;
+    }
+
+
+    public double calcularTotalFinal (){
+
+        return this.calcularSubTotales() + this.recargo;
+
+    }
+
+
+
+    //Colaboracion entre cliente y factura
+    public void mostrarDatosCliente () {
+        System.out.println("Cliente: " + cliente.getRazonSocial());
+        System.out.println("CUIT: " + cliente.getCuit());
+        System.out.println("Fecha: " + this.fecha);
+        System.out.println("Número de Factura: " + this.nroFactura);
+        System.out.println("Tipo de Pago: " + this.tipoPago);
+
+    }
+
+
+    public void calcularRecargo (){
+        if (this.tipoPago.equals("C")) recargo = 0.0;
+        if (this.tipoPago.equals("TC")) recargo = (subTotal * 0.1);
+        if (this.tipoPago.equals("TD")) recargo = (subTotal * 0.05);
+
+
+
+    }
+
 
     public Cliente getCliente() {
         return cliente;
